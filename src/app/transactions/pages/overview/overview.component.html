@@ -1,0 +1,18 @@
+<app-page-title [containerAligned]="false">Overview</app-page-title>
+
+<app-loading [show]="loading"></app-loading>
+
+<main class="container-fluid">
+  <div class="row">
+    <div class="col-6">
+      <app-bar-chart
+        [id]="'groups'"
+        [title]="'Grouped outgoing'"
+        [labels]="labels"
+        [dataset]="dataset"></app-bar-chart>
+    </div>
+    <div class="col-6">
+      <app-line-chart></app-line-chart>
+    </div>
+  </div>
+</main>
