@@ -1,5 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { TransactionsService } from '../../../core/services/transactions.service';
+import { FormControl, FormGroup } from '@angular/forms';
+import { IngTransaction } from '../../../core/models/transaction/ing-transaction.model';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-overview',
@@ -15,26 +18,87 @@ export class OverviewComponent implements OnInit {
 
   dataset: any = {};
 
+  monthly: any = {};
+
+  filterForm: FormGroup = new FormGroup({
+    date: new FormControl(moment().format('YYYY-MM'))
+  });
+
   constructor(private db: TransactionsService) { }
 
   ngOnInit() {
-    this.db.loadOutbound()
-      .then(this.sortAndFilter.bind(this))
+    this.loadAllData();
+  }
+
+  onFilter($event) {
+    $event.preventDefault();
+
+    this.loadAllData();
+  }
+
+  loadAllData() {
+    const promises = [
+      this.getOutboundData(),
+      this.getMonthlyHistoryData()
+    ];
+
+    this.loading = true;
+
+    Promise.all(promises).then(() => {
+      this.loading = false;
+    });
+  }
+
+  getMonthlyHistoryData() {
+    return this.db.loadMonthlyInOut()
+      .then(({ inbound, outbound }) => {
+        this.monthly = {
+          labels: Object.keys(inbound),
+          datasets: [
+            {
+              label: 'Inbound',
+              backgroundColor: '#36A2EB',
+              borderColor: '#36A2EB',
+              data: Object.values(inbound)
+            }, {
+              label: 'Outbound',
+              backgroundColor: '#FF3784',
+              borderColor: '#FF3784',
+              data: Object.values(outbound)
+            }
+          ]
+        };
+      });
+  }
+
+  getOutboundData() {
+    const monthFilter = this.filterTransactionByMonth(this.filterForm.get('date').value);
+
+    return this.db.loadOutbound(monthFilter)
+      .then(groups => groups.map(this.sumTransactions))
+      .then(groups => this.removeZeroOutboundGroups(groups))
+      .then(groups => groups.sort(this.sortGroup))
+      .then(groups => this.formatOutbound(groups))
       .then(({ labels, dataset }) => {
-        this.loading = false;
         this.labels = labels;
         this.dataset = dataset;
       });
   }
 
-  sortAndFilter(groups): { labels: any, dataset: any } {
-    return groups
-      .map(this.sumTransactions)
-      .sort(this.sortGroup)
-      .reduce(
-        this.formatForChart,
-        { labels: [], dataset: { data: [] } }
-      );
+  removeZeroOutboundGroups(groups) {
+    return groups.filter(group => group.value > 0);
+  }
+
+  formatOutbound(groups): { labels: any, dataset: any } {
+    return groups.reduce(
+      this.formatForChart,
+      { labels: [], dataset: { data: [] } }
+    );
+  }
+
+  filterTransactionByMonth(month: String) {
+    return (transaciton: IngTransaction) =>
+      transaciton.date.format('YYYY-MM') === month;
   }
 
   formatForChart(result, current) {

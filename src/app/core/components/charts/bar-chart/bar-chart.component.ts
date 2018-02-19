@@ -27,6 +27,8 @@ export class BarChartComponent implements OnChanges {
 
   @Input() dataset: any;
 
+  chartInstance: Chart;
+
   constructor() {}
 
   generateColors(length) {
@@ -41,17 +43,30 @@ export class BarChartComponent implements OnChanges {
     });
   }
 
-  generateDatasets() {
-    const set = { ...this.dataset, backgroundColor: this.generateColors(this.labels.length) }
-    return [set];
+  generateDataset() {
+    return { ...this.dataset, backgroundColor: this.generateColors(this.labels.length) };
   }
 
   ngOnChanges() {
-    var myChart = new Chart(this.id, {
+    if (this.chartInstance) {
+      return this.updateChart();
+    }
+
+    this.createChart();
+  }
+
+  updateChart() {
+    this.chartInstance.data.labels = this.labels;
+    this.chartInstance.data.datasets = [this.generateDataset()];
+    this.chartInstance.update();
+  }
+
+  createChart() {
+    this.chartInstance = new Chart('groups', {
       type: 'horizontalBar',
       data: {
         labels: this.labels,
-        datasets: this.generateDatasets()
+        datasets: [this.generateDataset()]
       },
       options: {
         legend: { display: false },
