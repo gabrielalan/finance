@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ListComponent } from './pages/list/list.component';
 import { ImportComponent } from './pages/import/import.component';
 import { OverviewComponent } from './pages/overview/overview.component';
+import { FilterComponent } from './components/filter/filter.component';
 
 @NgModule({
   imports: [
@@ -14,6 +15,6 @@ import { OverviewComponent } from './pages/overview/overview.component';
     RouterModule,
     CoreModule
   ],
-  declarations: [ListComponent, ImportComponent, OverviewComponent]
+  declarations: [ListComponent, ImportComponent, OverviewComponent, FilterComponent]
 })
 export class TransactionsModule { }

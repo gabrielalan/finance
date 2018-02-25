@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { TransactionsService } from '../../../core/services/transactions.service';
-import { FormControl, FormGroup } from '@angular/forms';
 import { IngTransaction } from '../../../core/models/transaction/ing-transaction.model';
 import * as moment from 'moment';
 
@@ -20,25 +19,21 @@ export class OverviewComponent implements OnInit {
 
   monthly: any = {};
 
-  filterForm: FormGroup = new FormGroup({
-    date: new FormControl(moment().format('YYYY-MM'))
-  });
-
   constructor(private db: TransactionsService) { }
 
   ngOnInit() {
-    this.loadAllData();
+    this.loadAllData({
+      date: moment().format('YYYY-MM')
+    });
   }
 
-  onFilter($event) {
-    $event.preventDefault();
-
-    this.loadAllData();
+  onFilter(data) {
+    this.loadAllData(data);
   }
 
-  loadAllData() {
+  loadAllData({ date }) {
     const promises = [
-      this.getOutboundData(),
+      this.getOutboundData(date),
       this.getMonthlyHistoryData()
     ];
 
@@ -71,8 +66,8 @@ export class OverviewComponent implements OnInit {
       });
   }
 
-  getOutboundData() {
-    const monthFilter = this.filterTransactionByMonth(this.filterForm.get('date').value);
+  getOutboundData(date) {
+    const monthFilter = this.filterTransactionByMonth(date);
 
     return this.db.loadOutbound(monthFilter)
       .then(groups => groups.map(this.sumTransactions))

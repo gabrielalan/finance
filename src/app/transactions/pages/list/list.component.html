@@ -1,25 +1,32 @@
 <app-page-title>Transaction list</app-page-title>
 
-<main class="container">
+<div class="transactions-list">
   <app-loading [show]="loading"></app-loading>
-  <table class="table">
-    <thead>
-      <tr>
-        <th width="100">Date</th>
-        <th>To</th>
-        <th width="200">Value</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of transactions">
-        <td>{{ item.date | date:'yyyy/MM/dd' }}</td>
-        <td>{{ item.description }}</td>
-        <td>
-          <strong [ngClass]="{'text-primary': item.operation === '+', 'text-danger': item.operation === '-'}">
-            {{ item.operation }}{{ item.value | currency:'EUR' }}
-          </strong>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</main>
+
+  <div class="container">
+    <app-filter (onFilter)="onFilter($event)" [useDateRange]="true"></app-filter>
+  </div>
+
+  <main class="container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th width="100">Date</th>
+          <th>To</th>
+          <th width="200">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of transactions">
+          <td>{{ item.date | date:'yyyy/MM/dd' }}</td>
+          <td>{{ item.description }}</td>
+          <td>
+            <strong [ngClass]="{'text-primary': item.operation === '+', 'text-danger': item.operation === '-'}">
+              {{ item.operation }}{{ item.value | currency:'EUR' }}
+            </strong>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+</div>
