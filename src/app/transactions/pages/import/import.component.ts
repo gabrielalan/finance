@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { TransactionsService } from '../../../core/services/transactions.service';
 
 @Component({
@@ -7,19 +7,28 @@ import { TransactionsService } from '../../../core/services/transactions.service
   styleUrls: ['./import.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class ImportComponent implements OnInit {
+export class ImportComponent {
+
+  loading = false;
 
   constructor(private base: TransactionsService) {}
 
   onFileChange(evt) {
     const reader = new FileReader();
+    const finish = this.importFinished.bind(this);
 
-    reader.onload = (e: any) => this.base.importFromCSV(e.target.result).then(console.log);
+    this.loading = true;
+
+    reader.onload = (e: any) => this.base
+      .importFromCSV(e.target.result)
+      .subscribe(finish, finish);
 
     reader.readAsText(evt.target.files[0]);
   }
 
-  ngOnInit() {
-  }
+  importFinished(response) {
+    this.loading = false;
 
+    console.log(response);
+  }
 }

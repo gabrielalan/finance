@@ -2,6 +2,9 @@ import { Injectable, group } from '@angular/core';
 import { DatabaseService } from './database.service';
 import { parse } from "papaparse";
 import { IngTransaction } from '../models/transaction/ing-transaction.model';
+import { HttpClient } from '@angular/common/http';
+
+import 'rxjs/add/operator/toPromise';
 
 const groups = [
   {
@@ -107,7 +110,7 @@ export class TransactionsService {
 
   inMemoryCache: any;
 
-  constructor(private base: DatabaseService) { }
+  constructor(private base: DatabaseService, private http: HttpClient) { }
 
   loadOutbound(...filters) {
     const classify = (outbound) => {
@@ -151,9 +154,12 @@ export class TransactionsService {
 
   load(): Promise<Array<IngTransaction>> {
     if (!this.inMemoryCache) {
-      this.inMemoryCache = this.base.ref('transactions')
-        .once('value')
-        .then(snapshot => snapshot.val())
+      // this.inMemoryCache = this.base.ref('transactions')
+      //   .once('value')
+      //   .then(snapshot => snapshot.val())
+      //   .then(this.convertToArray);
+      this.inMemoryCache = this.http.get('/api/transactions')
+        .toPromise()
         .then(this.convertToArray);
     }
 
@@ -201,7 +207,7 @@ export class TransactionsService {
     return (item) => filters.every(filter => filter(item));
   }
 
-  convertToArray(data) {
+  convertToArray(data): Array<IngTransaction> {
     return Object.keys(data).map(key => IngTransaction.fromDatabase(data[key]));
   }
 
@@ -209,11 +215,13 @@ export class TransactionsService {
     const transactions = parse(data, { header: true }).data
       .map(IngTransaction.fromCSVLine)
       .filter(truthy => truthy)
-      .reduce((result, { hash, date, ...data }) => {
-        result[hash] = { date: date.valueOf(), ...data };
-        return result;
-      }, {});
+      // .reduce((result, { hash, date, ...rest }) => {
+      //   result[hash] = { date: date.valueOf(), ...rest };
+      //   return result;
+      // }, {})
+      ;
 
-    return this.base.ref('transactions').update(transactions);
+    return this.http.post('/api/transactions', transactions);
+    // return this.base.ref('transactions').update(transactions);
   }
 }

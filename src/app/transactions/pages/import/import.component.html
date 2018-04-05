@@ -1,5 +1,7 @@
 <app-page-title>Import from CSV</app-page-title>
 
+<app-loading [show]="loading"></app-loading>
+
 <main class="container">
-  <input type="file" class="form-control" id="upload" (change)="onFileChange($event)" />
+  <input type="file" class="form-control" id="upload" (change)="onFileChange($event)" accept=".csv" />
 </main>

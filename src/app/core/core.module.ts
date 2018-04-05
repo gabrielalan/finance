@@ -8,6 +8,7 @@ import { LoadingComponent } from './components/loading/loading.component';
 import { PageTitleComponent } from './components/page-title/page-title.component';
 import { BarChartComponent } from './components/charts/bar-chart/bar-chart.component';
 import { LineChartComponent } from './components/charts/line-chart/line-chart.component';
+import { HttpClientModule } from '@angular/common/http';
 
 const components = [
   HeaderComponent,
@@ -20,6 +21,7 @@ const components = [
 @NgModule({
   imports: [
     CommonModule,
+    HttpClientModule,
     RouterModule
   ],
   declarations: components,
