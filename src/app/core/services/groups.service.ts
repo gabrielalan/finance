@@ -28,6 +28,12 @@ const groups = [
     ]
   },
   {
+    name: 'Savings',
+    matches: [
+      { field: 'description', regex: /(Hr GA Pereira, L Da Silva Moreira Pereira)/i },
+    ]
+  },
+  {
     name: 'Health Care',
     matches: [
       { field: 'description', regex: /(OHRA|Infomedics)/i },

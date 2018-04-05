@@ -11,6 +11,22 @@
     <table class="table">
       <thead>
         <tr>
+          <td colspan="2" class="align-middle">
+            <strong class="head-total-data align-middle">Total received</strong>
+            <span class="total-number text-info align-middle">
+                {{ total.received | currency:'EUR' }}
+            </span>
+          </td>
+          <td class="text-right align-middle">
+            <strong>Total spent</strong>
+          </td>
+          <td>
+            <span class="total-number text-danger">
+                {{ total.spent | currency:'EUR' }}
+            </span>
+          </td>
+        </tr>
+        <tr>
           <th width="100">Date</th>
           <th>To</th>
           <th>Group</th>
@@ -31,13 +47,23 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="3">
-            Total spent
+          <td colspan="3" class="text-right align-middle">
+            <strong>Total received</strong>
           </td>
           <td>
-            <h4 class="text-danger">
-                {{ total | currency:'EUR' }}
-            </h4>
+            <span class="total-number text-info">
+                {{ total.received | currency:'EUR' }}
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" class="text-right align-middle">
+            <strong>Total spent</strong>
+          </td>
+          <td>
+            <span class="total-number text-danger">
+                {{ total.spent | currency:'EUR' }}
+            </span>
           </td>
         </tr>
       </tfoot>

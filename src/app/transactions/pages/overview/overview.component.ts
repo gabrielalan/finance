@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { TransactionsService } from '../../../core/services/transactions.service';
 import { IngTransaction } from '../../../core/models/transaction/ing-transaction.model';
 import * as moment from 'moment';
@@ -9,7 +9,7 @@ import * as moment from 'moment';
   styleUrls: ['./overview.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class OverviewComponent implements OnInit {
+export class OverviewComponent {
 
   loading = true;
 
@@ -20,13 +20,6 @@ export class OverviewComponent implements OnInit {
   monthly: any = {};
 
   constructor(private db: TransactionsService) { }
-
-  ngOnInit() {
-    this.loadAllData({
-      startDate: moment().subtract(1, 'month').format('YYYY-MM-DD'),
-      finalDate: moment().format('YYYY-MM-DD')
-    });
-  }
 
   onFilter(data) {
     this.loadAllData(data);

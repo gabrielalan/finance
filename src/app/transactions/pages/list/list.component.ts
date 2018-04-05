@@ -1,8 +1,13 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { TransactionsService } from '../../../core/services/transactions.service';
 import * as moment from 'moment';
 import { IngTransaction } from '../../../core/models/transaction/ing-transaction.model';
 import { GroupsService } from '../../../core/services/groups.service';
+
+declare type Total = {
+  spent: Number;
+  received: Number;
+};
 
 @Component({
   selector: 'app-list',
@@ -10,22 +15,15 @@ import { GroupsService } from '../../../core/services/groups.service';
   styleUrls: ['./list.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class ListComponent implements OnInit {
+export class ListComponent {
 
   loading = true;
 
-  total: Number;
+  total: Total = { spent: 0, received: 0 };
 
   transactions: any;
 
   constructor(private db: TransactionsService, private groups: GroupsService) { }
-
-  ngOnInit() {
-    this.loadData({
-      startDate: moment().subtract(1, 'month').format('YYYY-MM-DD'),
-      finalDate: moment().format('YYYY-MM-DD')
-    });
-  }
 
   onFilter(filter) {
     this.loadData(filter);
@@ -47,12 +45,19 @@ export class ListComponent implements OnInit {
     );
   }
 
-  sumTotalSpent(data: Array<IngTransaction>): Number {
-    return data.reduce((total: Number, transaction) =>
-      transaction.operation === '-'
-        ? Number(total) + Number(transaction.value)
-        : total,
-    0);
+  sumTotalSpent(data: Array<IngTransaction>): Total {
+    const sumTotal = (total: Total, transaction) => (
+      {
+        spent: transaction.operation === '-'
+          ? Number(total.spent) + Number(transaction.value)
+          : total.spent,
+        received: transaction.operation === '+'
+          ? Number(total.received) + Number(transaction.value)
+          : total.received
+      }
+    );
+
+    return data.reduce(sumTotal, { spent: 0, received: 0 });
   }
 
   addGroup(data) {
