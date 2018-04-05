@@ -9,6 +9,7 @@ import { PageTitleComponent } from './components/page-title/page-title.component
 import { BarChartComponent } from './components/charts/bar-chart/bar-chart.component';
 import { LineChartComponent } from './components/charts/line-chart/line-chart.component';
 import { HttpClientModule } from '@angular/common/http';
+import { GroupsService } from './services/groups.service';
 
 const components = [
   HeaderComponent,
@@ -26,7 +27,7 @@ const components = [
   ],
   declarations: components,
   exports: components,
-  providers: [TransactionsService]
+  providers: [TransactionsService, GroupsService]
 })
 export class CoreModule {
   static forRoot() {

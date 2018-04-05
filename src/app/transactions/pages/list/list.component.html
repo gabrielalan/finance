@@ -13,6 +13,7 @@
         <tr>
           <th width="100">Date</th>
           <th>To</th>
+          <th>Group</th>
           <th width="200">Value</th>
         </tr>
       </thead>
@@ -20,6 +21,7 @@
         <tr *ngFor="let item of transactions">
           <td>{{ item.date | date:'yyyy/MM/dd' }}</td>
           <td>{{ item.description }}</td>
+          <td>{{ item.group }}</td>
           <td>
             <strong [ngClass]="{'text-primary': item.operation === '+', 'text-danger': item.operation === '-'}">
               {{ item.operation }}{{ item.value | currency:'EUR' }}
@@ -27,6 +29,18 @@
           </td>
         </tr>
       </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3">
+            Total spent
+          </td>
+          <td>
+            <h4 class="text-danger">
+                {{ total | currency:'EUR' }}
+            </h4>
+          </td>
+        </tr>
+      </tfoot>
     </table>
   </main>
 </div>

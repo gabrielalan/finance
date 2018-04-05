@@ -104,17 +104,22 @@ const groups = [
     ]
   }
 ];
+import { GroupsService } from './groups.service';
 
 @Injectable()
 export class TransactionsService {
 
   inMemoryCache: any;
 
-  constructor(private base: DatabaseService, private http: HttpClient) { }
+  constructor(
+    private base: DatabaseService,
+    private http: HttpClient,
+    private groups: GroupsService
+  ) { }
 
   loadOutbound(...filters) {
     const classify = (outbound) => {
-      const categories = groups.map(({ name, matches }) => {
+      const categories = this.groups.getGroups().map(({ name, matches }) => {
         const matchesFilter = item => {
           return matches.every(rule => rule.regex.test(item[rule.field]));
         };
@@ -128,7 +133,7 @@ export class TransactionsService {
       });
 
       const othersFilter = item => {
-        return groups.every(({ matches }) => {
+        return this.groups.getGroups().every(({ matches }) => {
           return matches.every(rule => !rule.regex.test(item[rule.field]));
         });
       };

@@ -23,7 +23,8 @@ export class OverviewComponent implements OnInit {
 
   ngOnInit() {
     this.loadAllData({
-      date: moment().format('YYYY-MM')
+      startDate: moment().subtract(1, 'month').format('YYYY-MM-DD'),
+      finalDate: moment().format('YYYY-MM-DD')
     });
   }
 
@@ -31,9 +32,9 @@ export class OverviewComponent implements OnInit {
     this.loadAllData(data);
   }
 
-  loadAllData({ date }) {
+  loadAllData(filter) {
     const promises = [
-      this.getOutboundData(date),
+      this.getOutboundData(filter),
       this.getMonthlyHistoryData()
     ];
 
@@ -66,10 +67,10 @@ export class OverviewComponent implements OnInit {
       });
   }
 
-  getOutboundData(date) {
-    const monthFilter = this.filterTransactionByMonth(date);
+  getOutboundData(filter) {
+    const dateFilter = this.filterByDate(filter);
 
-    return this.db.loadOutbound(monthFilter)
+    return this.db.loadOutbound(dateFilter)
       .then(groups => groups.map(this.sumTransactions))
       .then(groups => this.removeZeroOutboundGroups(groups))
       .then(groups => groups.sort(this.sortGroup))
@@ -91,9 +92,12 @@ export class OverviewComponent implements OnInit {
     );
   }
 
-  filterTransactionByMonth(month: String) {
-    return (transaciton: IngTransaction) =>
-      transaciton.date.format('YYYY-MM') === month;
+  filterByDate({ startDate, finalDate }) {
+    const start = moment(startDate, 'YYYY-MM-DD');
+    const final = moment(finalDate, 'YYYY-MM-DD');
+
+    return (transaction: IngTransaction) =>
+      (transaction.date.isSameOrBefore(final) && transaction.date.isSameOrAfter(start));
   }
 
   formatForChart(result, current) {

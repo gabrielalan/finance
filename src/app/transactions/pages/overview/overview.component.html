@@ -3,7 +3,7 @@
 <app-loading [show]="loading"></app-loading>
 
 <main class="container-fluid">
-  <app-filter (onFilter)="onFilter($event)"></app-filter>
+  <app-filter (onFilter)="onFilter($event)" [useDateRange]="true"></app-filter>
 
   <div class="row">
     <div class="col-6">
